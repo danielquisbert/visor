@@ -15,16 +15,17 @@
 		}
 		.cabecera{
 			height: 50px;
-			background-color: darkblue;
+			background-color: #888888;
 		}
 		.cabecera h2{
 			color: #fff;
 			margin-top: 0;
 		}
 		#mapa{
-			height: 300px;
-			width: 600px;
+			height: 500px;
+			width: 800px;
 			border: solid 3px darkblue;
+			
 		}
 		
 	</style>
@@ -32,12 +33,9 @@
     <link href="assets/css/bootstrap.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="assets/css/style.css" rel="stylesheet">
+   
     <script src="assets/js/jquery.min.js"></script>	
     <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/custom.js"></script>
-
-
 
     <link href="assets/css/font-awesome.min.css" rel="stylesheet">
 
@@ -167,7 +165,10 @@
 					}
 				}
 			});
+
 			map.addControl(controlInfo);
+			map.addControl(scale);
+		        
 			controlInfo.activate();
 
 
@@ -188,10 +189,13 @@
 </head>
 <body>
 	<div class="cabecera">
-		<h2>Visor Simple OpenLayers</h2>
+		<h3>Visor OpenLayers</h3>
 	</div>
+<br>
+<br>
+<center>
 	<div id="mapa"></div>
-
+</center>
 	<div id="informacion"></div>
 	
 

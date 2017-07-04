@@ -106,6 +106,7 @@ console.log(str);
 			var controlNavegacion = new OpenLayers.Control.Navigation();
 			var controlZoom = new OpenLayers.Control.PanZoomBar(); // Zoom
 			var escala = new OpenLayers.Control.Scale();
+			var over = new OpenLayers.Control.OverviewMap();
 			var host = "http://192.168.56.101";
 			OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
 
@@ -114,7 +115,7 @@ console.log(str);
 				projection: proyeccion,
 				displayProjection: proyeccion2,
 				units: 'm',
-				controls: [controlNavegacion, controlZoom,escala],
+				controls: [controlNavegacion, controlZoom,escala,over],
 				numZoomLevels: 21
 			};
 
@@ -293,11 +294,14 @@ $.ajax({
 	
 
             <br> 
-<center>
-	Descripci&oacute;n:<input type="text" id="nombre"></input>
-        <textarea rows="3" cols="100" id="output">Geojson</textarea>
-	<button onclick=send()  >Enviar</button>	
-</center>  
+<div class = "row">
+	<center>
+	<div class = "col-md-6" >
+	Descripci&oacute;n:<input type="text" id="nombre" class = "form-control"></input>
+        <textarea rows="3" cols="100" id="output" class = "form-control">Geojson</textarea>
+	<button onclick=send()  class= "btn btn-success">Enviar</button>	
+</center>
+</div>  </div>  
 
  
 

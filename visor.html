@@ -41,12 +41,71 @@
 
 
 	<script type="text/javascript">
-		var init = function(){
+        var map, vectors, formats;
+        function updateFormats() {
+            var in_options = {
+                'internalProjection': new OpenLayers.Projection('EPSG:900913'),
+                'externalProjection': new OpenLayers.Projection('EPSG:4326')
+            };   
+            var out_options = {
+                'internalProjection': new OpenLayers.Projection('EPSG:900913'),
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            };
+            var gmlOptions = {
+                featureType: "feature",
+                featureNS: "http://example.com/feature"
+            };
+            var gmlOptionsIn = OpenLayers.Util.extend(
+                OpenLayers.Util.extend({}, gmlOptions),
+                in_options
+            );
+            var gmlOptionsOut = OpenLayers.Util.extend(
+                OpenLayers.Util.extend({}, gmlOptions),
+                out_options
+            );
+            var kmlOptionsIn = OpenLayers.Util.extend(
+                {extractStyles: true}, in_options);
+            formats = {
+              'in': {
+                wkt: new OpenLayers.Format.WKT(in_options),
+                geojson: new OpenLayers.Format.GeoJSON(in_options),
+                georss: new OpenLayers.Format.GeoRSS(in_options),
+                gml2: new OpenLayers.Format.GML.v2(gmlOptionsIn),
+                gml3: new OpenLayers.Format.GML.v3(gmlOptionsIn),
+                kml: new OpenLayers.Format.KML(kmlOptionsIn),
+                atom: new OpenLayers.Format.Atom(in_options),
+                gpx: new OpenLayers.Format.GPX(in_options)
+              }, 
+              'out': {
+                wkt: new OpenLayers.Format.WKT(out_options),
+                geojson: new OpenLayers.Format.GeoJSON(out_options),
+                georss: new OpenLayers.Format.GeoRSS(out_options),
+                gml2: new OpenLayers.Format.GML.v2(gmlOptionsOut),
+                gml3: new OpenLayers.Format.GML.v3(gmlOptionsOut),
+                kml: new OpenLayers.Format.KML(out_options),
+                atom: new OpenLayers.Format.Atom(out_options),
+                gpx: new OpenLayers.Format.GPX(out_options)
+              } 
+            };
+        }
+        function serialize(feature) {
+            var type = "geojson";
+            // second argument for pretty printing (geojson only)
+            var pretty = false;
+            var str = formats['out'][type].write(feature, pretty);
+            // not a good idea in general, just for this demo
+            str = str.replace(/,/g, ', ');
+console.log(str);
+            document.getElementById('output').value = str;
+        }
 
+		var init = function(){
+			        
 			var proyeccion = new OpenLayers.Projection("EPSG:900913"); //EPSG:900913
 			var proyeccion2 = new OpenLayers.Projection("EPSG:4326");
 			var controlNavegacion = new OpenLayers.Control.Navigation();
 			var controlZoom = new OpenLayers.Control.PanZoomBar(); // Zoom
+			var escala = new OpenLayers.Control.Scale();
 			var host = "http://192.168.56.101";
 			OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
 
@@ -55,7 +114,7 @@
 				projection: proyeccion,
 				displayProjection: proyeccion2,
 				units: 'm',
-				controls: [controlNavegacion, controlZoom],
+				controls: [controlNavegacion, controlZoom,escala],
 				numZoomLevels: 21
 			};
 
@@ -89,7 +148,7 @@
 				layers: 'fondos:departamento1',
 				transparent: true
 			};
-
+			
 			var layerDepartamentosWMS = new OpenLayers.Layer.WMS(nombreWMS, urlWMS, propiedadesWMS);
 			layerDepartamentosWMS.setVisibility(false);
 			map.addLayer(layerDepartamentosWMS);
@@ -111,7 +170,7 @@
 				"Mapa Eólico PostGIS",
 				host + ":8080/geoserver/wms",
 				{
-					layers: 'curso-gis:tbl_eolico',
+					layers: 'gis-dev:poligonos',
 					transparent: true
 				}
 			);
@@ -166,9 +225,22 @@
 				}
 			});
 
+
+			var vectors = new OpenLayers.Layer.Vector("Vector Layer");
+			map.addLayer( vectors);
+
 			map.addControl(controlInfo);
 			
-		        
+		        map.addControl(new OpenLayers.Control.EditingToolbar(vectors));
+		            var options = {
+		                hover: true,
+		                onSelect: serialize
+		            };
+
+			var select = new OpenLayers.Control.SelectFeature(vectors, options);
+		        map.addControl(select);
+            		select.activate();
+
 			controlInfo.activate();
 
 
@@ -181,10 +253,31 @@
 				map.getProjection() // new OpenLayers.Projection("EPSG:900913")
 			);
 			map.setCenter(LonLatTransformado, zoom);
-
+			updateFormats();
 		}
 		// Cargamos la función init, para desplegar el mapa
 		window.onload = init;
+
+
+function send(){
+var dataPost = {
+   "geom": document.getElementById('output').value,
+   "nombre":document.getElementById('nombre').value
+};
+console.log('Hola mundo')
+console.log(dataPost);
+var dataString = JSON.stringify(dataPost);
+
+$.ajax({
+   url: 'http://192.168.56.1/servicio/save.php',
+   data: {myData: dataString},
+   type: 'POST',
+   success: function(response) {
+      alert(response);
+   }
+});
+
+}
 	</script>
 </head>
 <body>
@@ -198,6 +291,15 @@
 </center>
 	<div id="informacion"></div>
 	
+
+            <br> 
+<center>
+	Descripci&oacute;n:<input type="text" id="nombre"></input>
+        <textarea rows="3" cols="100" id="output">Geojson</textarea>
+	<button onclick=send()  >Enviar</button>	
+</center>  
+
+ 
 
 	<hr>
 	<form action="upload.php" method="post" enctype="multipart/form-data">

@@ -21,9 +21,9 @@ $jsonor = substr($jsonor,0,strripos($jsonor,"]")+1);
             $con = new Conexion();
 
 	$sql = "INSERT INTO gdata(nombre, geom) VALUES ('$obj->nombre',ST_GeomFromGeoJSON('{\"type\":\"$tipo\", \"coordinates\":$jsonor, \"crs\":{\"type\":\"name\", \"properties\":{\"name\":\"urn:ogc:def:crs:OGC:1.3:CRS84\"}}}'))";
-	
+
           $provincia =$con->consultaRetorno($sql);
-	echo $provincia;        
+	echo $provincia;
   /*  while ( $data =pg_fetch_assoc($provincia) ) {
                 echo var_dump($data).'<br>';
             }

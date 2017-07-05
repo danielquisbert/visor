@@ -1,4 +1,5 @@
 <?php
+// Servicio para registro de GeoJSon a PostgreSQL
 $obj = json_decode($_POST["myData"]);
 
 //echo $obj->nombre; 
@@ -22,9 +23,5 @@ $jsonor = substr($jsonor,0,strripos($jsonor,"]")+1);
 
 	$sql = "INSERT INTO gdata(nombre, geom) VALUES ('$obj->nombre',ST_GeomFromGeoJSON('{\"type\":\"$tipo\", \"coordinates\":$jsonor, \"crs\":{\"type\":\"name\", \"properties\":{\"name\":\"urn:ogc:def:crs:OGC:1.3:CRS84\"}}}'))";
 
-          $provincia =$con->consultaRetorno($sql);
-	echo $provincia;
-  /*  while ( $data =pg_fetch_assoc($provincia) ) {
-                echo var_dump($data).'<br>';
-            }
-*/
+          $pr =$con->consultaRetorno($sql);
+	echo $pr;

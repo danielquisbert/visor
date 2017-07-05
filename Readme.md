@@ -1,6 +1,6 @@
 # Readme
 
-*Control de versiones*
+*Control de versiones. Visor OpenLayers2.2 y registro de Poligonos GeoJSON via PHP a  PostgreSQL*
 
 ##Curso GIS
 
